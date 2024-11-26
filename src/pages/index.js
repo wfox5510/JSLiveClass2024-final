@@ -1,17 +1,22 @@
 import { api_base, api_path } from '../../main'
 
-axios.get(`${api_base}api/livejs/v1/customer/${api_path}/products`)
+function getProductsList(){
+  axios.get(`${api_base}api/livejs/v1/customer/${api_path}/products`)
   .then((response) => {
     renderProductsList(response.data.products);
   })
   .catch((error) => console.log(error.response.data.messege || '取得產品列表失敗'))
-
-axios.get(`${api_base}api/livejs/v1/customer/${api_path}/carts`)
-  .then((response) => {
-    console.log(response.data);
-    renderCartsList(response.data);
-  })
-  .catch((error) => console.log(error.response.data.messege || '取得產品列表失敗'))
+}
+function getCartsList(){
+  axios.get(`${api_base}api/livejs/v1/customer/${api_path}/carts`)
+    .then((response) => {
+      console.log(response.data);
+      renderCartsList(response.data);
+    })
+    .catch((error) => console.log(error.response.data.messege || '取得產品列表失敗'))
+}
+getProductsList();
+getCartsList();
 
 let productWrap = document.querySelector('.productWrap');
 function renderProductsList(productsData) {
