@@ -1,28 +1,27 @@
 import { api_base, api_path } from '../../main'
 
-function getProductsList(){
+let products;
+function getProductsList() {
   axios.get(`${api_base}api/livejs/v1/customer/${api_path}/products`)
-  .then((response) => {
-    renderProductsList(response.data.products);
-  })
-  .catch((error) => console.log(error.response.data.messege || '取得產品列表失敗'))
-}
-function getCartsList(){
-  axios.get(`${api_base}api/livejs/v1/customer/${api_path}/carts`)
     .then((response) => {
-      console.log(response.data);
-      renderCartsList(response.data);
+      products = response.data.products;
+      renderProductsList(products);
     })
     .catch((error) => console.log(error.response.data.messege || '取得產品列表失敗'))
+}
+function getCartsList() {
+  axios.get(`${api_base}api/livejs/v1/customer/${api_path}/carts`)
+    .then((response) => {
+      renderCartsList(response.data);
+    })
+    .catch((error) => console.log(error.response.data.messege || '取得購物車列表失敗'))
 }
 getProductsList();
 getCartsList();
 
-let productWrap = document.querySelector('.productWrap');
-function renderProductsList(productsData) {
-  let productCardHtml;
-  let productList = productsData.map((productsItem) => {
-    productCardHtml = `<li class="productCard">
+
+function productCardStr(productsItem){
+  return `<li class="productCard">
         <h4 class="productType">新品</h4>
         <img
           src=${productsItem.images}
@@ -32,11 +31,30 @@ function renderProductsList(productsData) {
         <del class="originPrice">NT$${productsItem.origin_price}</del>
         <p class="nowPrice">NT$${productsItem.price}</p>
       </li>`;
-    return productCardHtml
-  }).join('');
+}
 
+let productWrap = document.querySelector('.productWrap');
+function renderProductsList(productsData) {
+  let productList = productsData.map((productsItem) => {
+    return productCardStr(productsItem);
+  }).join('');
+  console.log(productList);
   productWrap.innerHTML = productList;
 }
+
+let productSelect = document.querySelector('.productSelect');
+productSelect.addEventListener('change', (e) => {
+  let productsList = "";
+  if(e.target.value === "全部")renderProductsList(products);
+  else{
+    productsList += products.map((productsItem) => {
+      if (productsItem.category === e.target.value) return productCardStr(productsItem);
+    }).join('');
+    productWrap.innerHTML = productsList
+  }
+})
+
+
 let shoppingCartTable = document.querySelector('.shoppingCart-table');
 function renderCartsList(shoppingCartData) {
   let shoppingCartList = "";
@@ -77,6 +95,9 @@ function renderCartsList(shoppingCartData) {
           </td>
           <td>NT$${shoppingCartData.finalTotal}</td>
         </tr>`
-  console.log(shoppingCartList);
   shoppingCartTable.innerHTML = shoppingCartList;
+}
+
+function addCartList(){
+  
 }
