@@ -20,8 +20,8 @@ getProductsList();
 getCartsList();
 
 
-function productCardStr(productsItem){
-  return `<li class="productCard">
+function productCardStr(productsItem) {
+  return `<li class="productCard" data-id=${productsItem.id}>
         <h4 class="productType">新品</h4>
         <img
           src=${productsItem.images}
@@ -43,25 +43,34 @@ function renderProductsList(productsData) {
   let productList = productsData.map((productsItem) => {
     return productCardStr(productsItem);
   }).join('');
-  console.log(productList);
   productWrap.innerHTML = productList;
+
+  productWrap.addEventListener('click', (e) => {
+    if(e.target.getAttribute("class") === "addCardBtn"){
+      e.preventDefault();
+      let qty = e.target.closest('.productCard').querySelector('.addCart-quantity').value;
+      let productID = e.target.closest('.productCard').getAttribute('data-id');
+      addCartList(productID,qty);
+    }
+  })
+}
+
+
+function addCartList(productID,qty) {
+  
 }
 
 let productSelect = document.querySelector('.productSelect');
 productSelect.addEventListener('change', (e) => {
   let productsList = "";
-  if(e.target.value === "全部")renderProductsList(products);
-  else{
+  if (e.target.value === "全部") renderProductsList(products);
+  else {
     productsList += products.map((productsItem) => {
       if (productsItem.category === e.target.value) return productCardStr(productsItem);
     }).join('');
     productWrap.innerHTML = productsList
   }
 })
-
-function addCartList(){
-  
-}
 
 let shoppingCartTable = document.querySelector('.shoppingCart-table');
 function renderCartsList(shoppingCartData) {
