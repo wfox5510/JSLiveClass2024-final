@@ -588,6 +588,20 @@ body {
   padding: 8px 24px;
 }
 
+.products-quantity-wrap{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.addCart-quantity{
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-right: 4px;
+  margin-left: 4px;
+  border: 1px solid #706b6b;
+  border-radius: 4px;
+}
+
 .originPrice {
   font-size: 1.25rem;
 }

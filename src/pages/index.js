@@ -26,6 +26,11 @@ function productCardStr(productsItem){
         <img
           src=${productsItem.images}
           alt="">
+        <div class="products-quantity-wrap">
+          <button class="quantity-decrease">-</button>
+          <span class="addCart-quantity">1</span >
+          <button class="quantity-increase">+</button>
+        </div>
         <a href="#" class="addCardBtn">加入購物車</a>
         <h3>${productsItem.title}</h3>
         <del class="originPrice">NT$${productsItem.origin_price}</del>
