@@ -28,7 +28,7 @@ function productCardStr(productsItem){
           alt="">
         <div class="products-quantity-wrap">
           <button class="quantity-decrease">-</button>
-          <span class="addCart-quantity">1</span >
+          <input type="text" class="addCart-quantity" value = "0">
           <button class="quantity-increase">+</button>
         </div>
         <a href="#" class="addCardBtn">加入購物車</a>
@@ -59,6 +59,9 @@ productSelect.addEventListener('change', (e) => {
   }
 })
 
+function addCartList(){
+  
+}
 
 let shoppingCartTable = document.querySelector('.shoppingCart-table');
 function renderCartsList(shoppingCartData) {
@@ -103,6 +106,4 @@ function renderCartsList(shoppingCartData) {
   shoppingCartTable.innerHTML = shoppingCartList;
 }
 
-function addCartList(){
-  
-}
+
