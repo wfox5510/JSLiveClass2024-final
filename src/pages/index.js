@@ -7,14 +7,16 @@ function getProductsList() {
       products = response.data.products;
       renderProductsList(products);
     })
-    .catch((error) => console.log(error.response.data.messege || '取得產品列表失敗'))
+    .catch((error) => console.log(error.response.data.message || '取得產品列表失敗'))
 }
+let cartsList;
 function getCartsList() {
   axios.get(`${api_base}api/livejs/v1/customer/${api_path}/carts`)
     .then((response) => {
-      renderCartsList(response.data);
+      cartsList = response.data;
+      renderCartsList(cartsList);
     })
-    .catch((error) => console.log(error.response.data.messege || '取得購物車列表失敗'))
+    .catch((error) => console.log(error.response.data.message || '取得購物車列表失敗'))
 }
 getProductsList();
 getCartsList();
@@ -48,16 +50,29 @@ function renderProductsList(productsData) {
   productWrap.addEventListener('click', (e) => {
     if(e.target.getAttribute("class") === "addCardBtn"){
       e.preventDefault();
-      let qty = e.target.closest('.productCard').querySelector('.addCart-quantity').value;
+      let qty = parseInt(e.target.closest('.productCard').querySelector('.addCart-quantity').value);
       let productID = e.target.closest('.productCard').getAttribute('data-id');
       addCartList(productID,qty);
     }
   })
 }
 
-
 function addCartList(productID,qty) {
-  
+  cartsList.carts.forEach((cartsItem) => {
+    if(cartsItem.product.id === productID){
+      qty += cartsItem.quantity;
+    }
+  });
+  axios.post(`${api_base}api/livejs/v1/customer/${api_path}/carts`,{
+    "data": {
+      productId: productID,
+      quantity: qty
+    }
+  })
+  .then((response)=>{
+    getCartsList();
+  })
+  .catch((error) => console.log(error.response.data.message || '加入購物車列表失敗'))
 }
 
 let productSelect = document.querySelector('.productSelect');
@@ -91,7 +106,11 @@ function renderCartsList(shoppingCartData) {
             </div>
           </td>
           <td>${shoppingCartItem.product.price}</td>
-          <td>${shoppingCartItem.quantity}</td>
+          <td class="carts-quantity-wrap">
+            <button class="quantity-decrease">-</button>
+            <input type="text" class="addCart-quantity" value = ${shoppingCartItem.quantity}>
+            <button class="quantity-increase">+</button>
+          </td>
           <td>${shoppingCartItem.product.price * shoppingCartItem.quantity}</td>
           <td class="discardBtn">
             <a href="#" class="material-icons">
