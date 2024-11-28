@@ -108,7 +108,7 @@ function renderCartsList(shoppingCartData) {
             </td>
             <td>${shoppingCartItem.product.price * shoppingCartItem.quantity}</td>
             <td class="discardBtn">
-              <a href="#" class="material-icons">
+              <a href="#" class="material-icons discardCartsItemBtn" data-id=${shoppingCartItem.id}>
                 clear
               </a>
             </td>
@@ -136,6 +136,13 @@ function renderCartsList(shoppingCartData) {
   })
 }
 
+shoppingCartTable.addEventListener('click',(e)=>{
+  if(e.target.classList.contains('discardCartsItemBtn')){
+    e.preventDefault();
+    console.log("有問題!!");
+    deleteCartsItem(e.target.getAttribute('data-id'));
+  }
+})
 
 function addCartList(productID, qty) {
   cartsList.carts.forEach((cartsItem) => {
@@ -155,6 +162,14 @@ function addCartList(productID, qty) {
     .catch((error) => console.log(error.response.data.message || '加入購物車列表失敗'))
 }
 
+function deleteCartsItem(cartsID){
+  console.log('text')
+  axios.delete(`${api_base}api/livejs/v1/customer/${api_path}/carts/${cartsID}`)
+  .then(()=>{
+    getCartsList();
+  })
+  .catch((error) => console.log(error.response.data.message || '刪除購物車品項失敗'))
+}
 
 function deleteAllCartsList() {
   axios.delete(`${api_base}api/livejs/v1/customer/${api_path}/carts`)
