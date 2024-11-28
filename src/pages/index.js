@@ -48,31 +48,13 @@ function renderProductsList(productsData) {
   productWrap.innerHTML = productList;
 
   productWrap.addEventListener('click', (e) => {
-    if(e.target.getAttribute("class") === "addCardBtn"){
+    if (e.target.getAttribute("class") === "addCardBtn") {
       e.preventDefault();
       let qty = parseInt(e.target.closest('.productCard').querySelector('.addCart-quantity').value);
       let productID = e.target.closest('.productCard').getAttribute('data-id');
-      addCartList(productID,qty);
+      addCartList(productID, qty);
     }
   })
-}
-
-function addCartList(productID,qty) {
-  cartsList.carts.forEach((cartsItem) => {
-    if(cartsItem.product.id === productID){
-      qty += cartsItem.quantity;
-    }
-  });
-  axios.post(`${api_base}api/livejs/v1/customer/${api_path}/carts`,{
-    "data": {
-      productId: productID,
-      quantity: qty
-    }
-  })
-  .then((response)=>{
-    getCartsList();
-  })
-  .catch((error) => console.log(error.response.data.message || '加入購物車列表失敗'))
 }
 
 let productSelect = document.querySelector('.productSelect');
@@ -87,51 +69,97 @@ productSelect.addEventListener('change', (e) => {
   }
 })
 
+//渲染購物車頁面
 let shoppingCartTable = document.querySelector('.shoppingCart-table');
 function renderCartsList(shoppingCartData) {
   let shoppingCartList = "";
   shoppingCartList += `<tr>
-          <th width="40%">品項</th>
-          <th width="15%">單價</th>
-          <th width="15%">數量</th>
-          <th width="15%">金額</th>
-          <th width="15%"></th>
-        </tr>`;
-  shoppingCartList += shoppingCartData.carts.map((shoppingCartItem) => {
-    let shoppingCartHtml = `<tr>
-          <td>
-            <div class="cardItem-title">
-              <img src="https://i.imgur.com/HvT3zlU.png" alt="">
-              <p>Antony ${shoppingCartItem.product.title}</p>
-            </div>
-          </td>
-          <td>${shoppingCartItem.product.price}</td>
-          <td class="carts-quantity-wrap">
-            <button class="quantity-decrease">-</button>
-            <input type="text" class="addCart-quantity" value = ${shoppingCartItem.quantity}>
-            <button class="quantity-increase">+</button>
-          </td>
-          <td>${shoppingCartItem.product.price * shoppingCartItem.quantity}</td>
-          <td class="discardBtn">
-            <a href="#" class="material-icons">
-              clear
-            </a>
-          </td>
-        </tr>`;
-    return shoppingCartHtml;
-  }).join('');
+            <th width="40%">品項</th>
+            <th width="15%">單價</th>
+            <th width="15%" style="padding-left:28px">數量</th>
+            <th width="15%">金額</th>
+            <th width="15%"></th>
+          </tr>`;
+  if (shoppingCartData.carts.length === 0) {
+    console.log('empty')
+    shoppingCartList += `
+    <tr>
+      <td colspan="5" style="text-align:center">
+        購物車目前是空的喔~
+      </td>
+    </tr>`;
+  }
+  else {
+    shoppingCartList += shoppingCartData.carts.map((shoppingCartItem) => {
+      let shoppingCartHtml = `<tr>
+            <td>
+              <div class="cardItem-title">
+                <img src="https://i.imgur.com/HvT3zlU.png" alt="">
+                <p>Antony ${shoppingCartItem.product.title}</p>
+              </div>
+            </td>
+            <td>${shoppingCartItem.product.price}</td>
+            <td>
+              <div class="carts-quantity-wrap">
+                <button class="quantity-decrease">-</button>
+                <input type="text" class="addCart-quantity" value = ${shoppingCartItem.quantity}>
+                <button class="quantity-increase">+</button>
+              </div>
+            </td>
+            <td>${shoppingCartItem.product.price * shoppingCartItem.quantity}</td>
+            <td class="discardBtn">
+              <a href="#" class="material-icons">
+                clear
+              </a>
+            </td>
+          </tr>`;
+      return shoppingCartHtml;
+    }).join('');
+  }
   shoppingCartList += `<tr>
-          <td>
-            <a href="#" class="discardAllBtn">刪除所有品項</a>
-          </td>
-          <td></td>
-          <td></td>
-          <td>
-            <p>總金額</p>
-          </td>
-          <td>NT$${shoppingCartData.finalTotal}</td>
-        </tr>`
+            <td>
+              <a href="#" class="discardAllBtn">刪除所有品項</a>
+            </td>
+            <td></td>
+            <td></td>
+            <td>
+              <p>總金額</p>
+            </td>
+            <td>NT$${shoppingCartData.finalTotal}</td>
+          </tr>`
   shoppingCartTable.innerHTML = shoppingCartList;
+
+  let discardAllBtn = document.querySelector('.discardAllBtn');
+  discardAllBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    deleteAllCartsList();
+  })
 }
 
 
+function addCartList(productID, qty) {
+  cartsList.carts.forEach((cartsItem) => {
+    if (cartsItem.product.id === productID) {
+      qty += cartsItem.quantity;
+    }
+  });
+  axios.post(`${api_base}api/livejs/v1/customer/${api_path}/carts`, {
+    "data": {
+      productId: productID,
+      quantity: qty
+    }
+  })
+    .then((response) => {
+      getCartsList();
+    })
+    .catch((error) => console.log(error.response.data.message || '加入購物車列表失敗'))
+}
+
+
+function deleteAllCartsList() {
+  axios.delete(`${api_base}api/livejs/v1/customer/${api_path}/carts`)
+    .then((response) => {
+      getCartsList();
+    })
+    .catch((error) => console.log(error.response.data.message || '刪除所有購物車列表失敗'))
+}

@@ -593,14 +593,26 @@ body {
   justify-content: center;
   align-items: center;
   margin: 4px 0px;
+  .addCart-quantity{
+    margin-right: 4px;
+    margin-left: 4px;
+    border: 1px solid #706b6b;
+    text-align: center;
+    width: 60px;
+  }
 }
-.addCart-quantity{
-  margin-right: 4px;
-  margin-left: 4px;
-  border: 1px solid #706b6b;
-  text-align: center;
-  width: 60px;
+
+.carts-quantity-wrap{
+  display: flex;
+  margin: 4px 0px;
+  .addCart-quantity{
+    border: 1px solid #706b6b;
+    border-radius: 0px;
+    text-align: center;
+    width: 30px;
+  }
 }
+
 
 .originPrice {
   font-size: 1.25rem;
