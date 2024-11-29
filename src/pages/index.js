@@ -104,7 +104,7 @@ function renderCartsList(shoppingCartData) {
   }
   else {
     shoppingCartList += shoppingCartData.carts.map((shoppingCartItem) => {
-      let shoppingCartHtml = `<tr>
+      let shoppingCartHtml = `<tr data-id=${shoppingCartItem.id}>
             <td>
               <div class="cardItem-title">
                 <img src="https://i.imgur.com/HvT3zlU.png" alt="">
@@ -121,7 +121,7 @@ function renderCartsList(shoppingCartData) {
             </td>
             <td>${shoppingCartItem.product.price * shoppingCartItem.quantity}</td>
             <td class="discardBtn">
-              <a href="#" class="material-icons discardCartsItemBtn" data-id=${shoppingCartItem.id}>
+              <a href="#" class="material-icons discardCartsItemBtn">
                 clear
               </a>
             </td>
@@ -152,8 +152,7 @@ function renderCartsList(shoppingCartData) {
 shoppingCartTable.addEventListener('click',(e)=>{
   if(e.target.classList.contains('discardCartsItemBtn')){
     e.preventDefault();
-    console.log("有問題!!");
-    deleteCartsItem(e.target.getAttribute('data-id'));
+    deleteCartsItem(e.target.closest('tr').getAttribute('data-id'));
   }
 })
 
@@ -169,7 +168,7 @@ function addCartList(productID, qty) {
       quantity: qty
     }
   })
-    .then((response) => {
+    .then(() => {
       getCartsList();
     })
     .catch((error) => console.log(error.response.data.message || '加入購物車列表失敗'))
@@ -186,8 +185,39 @@ function deleteCartsItem(cartsID){
 
 function deleteAllCartsList() {
   axios.delete(`${api_base}api/livejs/v1/customer/${api_path}/carts`)
-    .then((response) => {
+    .then(() => {
       getCartsList();
     })
     .catch((error) => console.log(error.response.data.message || '刪除所有購物車列表失敗'))
+}
+
+shoppingCartTable.addEventListener('click',(e)=>{
+  if(e.target.getAttribute('class') === 'quantity-decrease' || e.target.getAttribute('class') === 'quantity-increase'){
+    let addCartQuantity = e.target.closest('.carts-quantity-wrap').querySelector('.addCart-quantity');
+    if(e.target.getAttribute('class') === 'quantity-decrease' && Number(addCartQuantity.value) > 1){
+      addCartQuantity.value = Number(addCartQuantity.value) - 1;
+    } 
+    else if(e.target.getAttribute('class') === 'quantity-increase'){
+      addCartQuantity.value = Number(addCartQuantity.value) + 1;
+    }
+    let qty = Number(addCartQuantity.value);
+    let cartID = e.target.closest('tr').getAttribute('data-id');
+    editCartsQuantity(cartID,qty);
+  }
+})
+
+function editCartsQuantity(cartsID,qty){
+  axios.patch(`${api_base}api/livejs/v1/customer/${api_path}/carts`,
+    {
+      data: {
+        id: cartsID,
+        quantity: qty
+      }
+    }
+  )
+  .then((response)=>{
+    cartsList = response.data;
+    renderCartsList(cartsList);
+  })
+  .catch((error) => console.log(error.response.data.message || '修改購物車列表失敗'))
 }
