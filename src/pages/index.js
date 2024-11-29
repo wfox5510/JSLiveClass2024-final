@@ -41,21 +41,34 @@ function productCardStr(productsItem) {
 }
 
 let productWrap = document.querySelector('.productWrap');
+productWrap.addEventListener('click', (e) => {
+  if (e.target.getAttribute("class") === "addCardBtn") {
+    e.preventDefault();
+    let qty = parseInt(e.target.closest('.productCard').querySelector('.addCart-quantity').value);
+    let productID = e.target.closest('.productCard').getAttribute('data-id');
+    addCartList(productID, qty);
+  }
+})
+
+productWrap.addEventListener('click',(e)=>{
+  if(e.target.getAttribute('class') === 'quantity-decrease' || e.target.getAttribute('class') === 'quantity-increase'){
+    let addCartQuantity = e.target.closest('.products-quantity-wrap').querySelector('.addCart-quantity');
+    if(e.target.getAttribute('class') === 'quantity-decrease' && Number(addCartQuantity.value) > 0){
+      addCartQuantity.value = Number(addCartQuantity.value) - 1;
+    }
+    else if(e.target.getAttribute('class') === 'quantity-increase'){
+      addCartQuantity.value = Number(addCartQuantity.value) + 1;
+    }
+  }
+})
+
 function renderProductsList(productsData) {
   let productList = productsData.map((productsItem) => {
     return productCardStr(productsItem);
   }).join('');
   productWrap.innerHTML = productList;
-
-  productWrap.addEventListener('click', (e) => {
-    if (e.target.getAttribute("class") === "addCardBtn") {
-      e.preventDefault();
-      let qty = parseInt(e.target.closest('.productCard').querySelector('.addCart-quantity').value);
-      let productID = e.target.closest('.productCard').getAttribute('data-id');
-      addCartList(productID, qty);
-    }
-  })
 }
+
 
 let productSelect = document.querySelector('.productSelect');
 productSelect.addEventListener('change', (e) => {
