@@ -94,7 +94,6 @@ function renderCartsList(shoppingCartData) {
             <th width="15%"></th>
           </tr>`;
   if (shoppingCartData.carts.length === 0) {
-    console.log('empty')
     shoppingCartList += `
     <tr>
       <td colspan="5" style="text-align:center">
@@ -175,7 +174,6 @@ function addCartList(productID, qty) {
 }
 
 function deleteCartsItem(cartsID){
-  console.log('text')
   axios.delete(`${api_base}api/livejs/v1/customer/${api_path}/carts/${cartsID}`)
   .then(()=>{
     getCartsList();
