@@ -219,3 +219,32 @@ function editCartsQuantity(cartsID,qty){
   })
   .catch((error) => console.log(error.response.data.message || '修改購物車列表失敗'))
 }
+
+
+let orderInfoBtn = document.querySelector('.orderInfo-btn');
+orderInfoBtn.addEventListener('click',(e)=>{
+  e.preventDefault();
+  postOrder();
+})
+function postOrder(){
+  let customerName = document.querySelector('#customerName');
+  let customerPhone = document.querySelector('#customerPhone');
+  let customerEmail = document.querySelector('#customerEmail');
+  let customerAddress = document.querySelector('#customerAddress');
+  let tradeWay = document.querySelector('#tradeWay');
+  axios.post(`${api_base}api/livejs/v1/customer/${api_path}/orders`,{
+    data: {
+      user: {
+        name: "六角學院",
+        tel: "07-5313506",
+        email: "hexschool@hexschool.com",
+        address: "高雄市六角學院路",
+        payment: "Apple Pay"
+      }
+    }
+  })
+  .then((response)=>{
+    getCartsList();
+  })
+  .catch((error) => console.log(error.response.data.message || '送出訂單失敗'))
+}
