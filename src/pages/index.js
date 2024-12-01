@@ -235,11 +235,11 @@ function postOrder(){
   axios.post(`${api_base}api/livejs/v1/customer/${api_path}/orders`,{
     data: {
       user: {
-        name: "六角學院",
-        tel: "07-5313506",
-        email: "hexschool@hexschool.com",
-        address: "高雄市六角學院路",
-        payment: "Apple Pay"
+        name: customerName.value,
+        tel: customerPhone.value,
+        email: customerEmail.value,
+        address: customerAddress.value,
+        payment: tradeWay.value
       }
     }
   })
