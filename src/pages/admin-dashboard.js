@@ -11,7 +11,7 @@ function getOrder() {
       orderData = response.data.orders;
       renderOrderList(orderData);
     })
-    .catch((error) => {console.log(error.response.data.messege || '取得訂單列表失敗');})
+    .catch((error) => { console.log(error.response.data.messege || '取得訂單列表失敗'); })
 }
 getOrder()
 
@@ -61,30 +61,37 @@ function renderOrderList(orderData) {
 }
 orderPageTable.addEventListener('click', (e) => {
   if (e.target.closest(".orderStatus") != null) {
-    e.preventDefault()
     let orderID = e.target.closest("tr").getAttribute("data-orderID");
     let isOrderPaid;
-    e.target.innerHTML === "已處理"? isOrderPaid = true : isOrderPaid = false;
+    let orderStatusHtml = e.target.closest(".orderStatus");
+    e.target.innerHTML === "已處理" ? isOrderPaid = true : isOrderPaid = false;
     isOrderPaid = !isOrderPaid;
-    axios.put(`${api_base}api/livejs/v1/admin/${api_path}/orders`, {
-      data: {
-        id: orderID,
-        paid: isOrderPaid,
-      }
-    },
+    
+    e.preventDefault();
+    putOrderState(orderStatusHtml, orderID, isOrderPaid);
+  }
+})
+
+function putOrderState(orderStatusHtml, orderID, isOrderPaid) {
+  axios.put(`${api_base}api/livejs/v1/admin/${api_path}/orders`, {
+    data: {
+      id: orderID,
+      paid: isOrderPaid,
+    }
+  },
     {
       headers: {
         authorization: api_token
       }
     })
-      .then((response) => {
-        let orderState;
-        isOrderPaid === true ? orderState = "已處理" : orderState = "未處理";
-        e.target.closest(".orderStatus").innerHTML = `<a href="#" data-orderID=${orderID} data-isOrderPaid=${isOrderPaid}>${orderState}</a>`
-      })
-      .catch((error) => {console.log(error.response.data.message)})
-  }
-})
+    .then((response) => {
+      let orderState;
+      isOrderPaid === true ? orderState = "已處理" : orderState = "未處理";
+      orderStatusHtml.innerHTML = `<a href="#" data-orderID=${orderID} data-isOrderPaid=${isOrderPaid}>${orderState}</a>`
+    })
+    .catch((error) => { console.log(error.response.data.message) })
+}
+
 
 orderPageTable.addEventListener('click', (e) => {
   if (e.target.getAttribute("class") === "delSingleOrder-Btn") {
@@ -93,14 +100,14 @@ orderPageTable.addEventListener('click', (e) => {
   }
 })
 
-function delOrder(OrderID){
-  axios.delete(`${api_base}api/livejs/v1/admin/${api_path}/orders/${OrderID}`,{
+function delOrder(OrderID) {
+  axios.delete(`${api_base}api/livejs/v1/admin/${api_path}/orders/${OrderID}`, {
     headers: {
       authorization: api_token
     }
   })
-  .then((response)=>{getOrder()})
-  .catch((error)=>{console.log(error.response.data.message)})
+    .then((response) => { getOrder() })
+    .catch((error) => { console.log(error.response.data.message) })
 }
 
 // C3.js
