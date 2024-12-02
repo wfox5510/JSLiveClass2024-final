@@ -110,6 +110,20 @@ function delOrder(OrderID) {
     .catch((error) => { console.log(error.response.data.message) })
 }
 
+let discardAllBtn = document.querySelector('.discardAllBtn');
+discardAllBtn.addEventListener('click',(e) => delAllOrder());
+
+function delAllOrder(){
+    axios.delete(`${api_base}api/livejs/v1/admin/${api_path}/orders`,{
+      headers: {
+        authorization: api_token
+      }
+    })
+    .then((response) => getOrder())
+    .catch((error) => console.log(error.response.data.message))
+}
+
+
 // C3.js
 let chart = c3.generate({
   bindto: '#chart', // HTML 元素綁定
