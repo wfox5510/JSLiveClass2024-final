@@ -36,7 +36,7 @@ function renderOrderList(orderData) {
     }).join('');
     let orderState;
     orderItem.paid === true ? orderState = "已處理" : orderState = "未處理";
-    let orderListHtml = `<tr>
+    let orderListHtml = `<tr data-orderID=${orderItem.id}>
           <td>${orderItem.id}</td>
           <td>
             <p>${orderItem.user.name}</p>
@@ -49,7 +49,7 @@ function renderOrderList(orderData) {
           </td>
           <td>${createdAt}</td>
           <td class="orderStatus">
-            <a href="#" data-orderID=${orderItem.id}>${orderState}</a>
+            <a href="#">${orderState}</a>
           </td>
           <td>
             <input type="button" class="delSingleOrder-Btn" value="刪除">
@@ -62,7 +62,7 @@ function renderOrderList(orderData) {
 orderPageTable.addEventListener('click', (e) => {
   if (e.target.closest(".orderStatus") != null) {
     e.preventDefault()
-    let orderID = e.target.getAttribute("data-orderID");
+    let orderID = e.target.closest("tr").getAttribute("data-orderID");
     let isOrderPaid;
     e.target.innerHTML === "已處理"? isOrderPaid = true : isOrderPaid = false;
     isOrderPaid = !isOrderPaid;
@@ -86,6 +86,22 @@ orderPageTable.addEventListener('click', (e) => {
   }
 })
 
+orderPageTable.addEventListener('click', (e) => {
+  if (e.target.getAttribute("class") === "delSingleOrder-Btn") {
+    let orderID = e.target.closest("tr").getAttribute("data-orderID");
+    delOrder(orderID);
+  }
+})
+
+function delOrder(OrderID){
+  axios.delete(`${api_base}api/livejs/v1/admin/${api_path}/orders/${OrderID}`,{
+    headers: {
+      authorization: api_token
+    }
+  })
+  .then((response)=>{getOrder()})
+  .catch((error)=>{console.log(error.response.data.message)})
+}
 
 // C3.js
 let chart = c3.generate({
