@@ -161,6 +161,14 @@ function addCartList(productID, qty) {
       qty += cartsItem.quantity;
     }
   });
+  Swal.fire({
+    title: 'Loading...',
+    text: '訂單處理中...請稍後',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  });
   axios.post(`${api_base}api/livejs/v1/customer/${api_path}/carts`, {
     "data": {
       productId: productID,
@@ -171,22 +179,41 @@ function addCartList(productID, qty) {
       getCartsList();
     })
     .catch((error) => console.log(error.response.data.message || '加入購物車列表失敗'))
+     .finally(()=>Swal.close())
 }
 
 function deleteCartsItem(cartsID){
+  Swal.fire({
+    title: 'Loading...',
+    text: '訂單處理中...請稍後',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  });
   axios.delete(`${api_base}api/livejs/v1/customer/${api_path}/carts/${cartsID}`)
   .then(()=>{
     getCartsList();
   })
   .catch((error) => console.log(error.response.data.message || '刪除購物車品項失敗'))
+  .finally(()=>Swal.close())
 }
 
 function deleteAllCartsList() {
+  Swal.fire({
+    title: 'Loading...',
+    text: '訂單處理中...請稍後',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  });
   axios.delete(`${api_base}api/livejs/v1/customer/${api_path}/carts`)
     .then(() => {
       getCartsList();
     })
     .catch((error) => console.log(error.response.data.message || '刪除所有購物車列表失敗'))
+    .finally(()=>Swal.close())
 }
 
 shoppingCartTable.addEventListener('click',(e)=>{
@@ -205,6 +232,14 @@ shoppingCartTable.addEventListener('click',(e)=>{
 })
 
 function editCartsQuantity(cartsID,qty){
+  Swal.fire({
+    title: 'Loading...',
+    text: '訂單處理中...請稍後',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  });
   axios.patch(`${api_base}api/livejs/v1/customer/${api_path}/carts`,
     {
       data: {
@@ -218,6 +253,7 @@ function editCartsQuantity(cartsID,qty){
     renderCartsList(cartsList);
   })
   .catch((error) => console.log(error.response.data.message || '修改購物車列表失敗'))
+  .finally(()=>Swal.close())
 }
 
 
@@ -232,6 +268,25 @@ function postOrder(){
   let customerEmail = document.querySelector('#customerEmail');
   let customerAddress = document.querySelector('#customerAddress');
   let tradeWay = document.querySelector('#tradeWay');
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    }
+  });
+  Swal.fire({
+    title: 'Loading...',
+    text: '訂單處理中...請稍後',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  });
   axios.post(`${api_base}api/livejs/v1/customer/${api_path}/orders`,{
     data: {
       user: {
@@ -245,6 +300,17 @@ function postOrder(){
   })
   .then((response)=>{
     getCartsList();
+    Swal.close();
+    Toast.fire({
+      icon: "success",
+      title: "您的訂單已成功送出"
+    });
   })
-  .catch((error) => console.log(error.response.data.message || '送出訂單失敗'))
+  .catch((error) => {
+    Swal.close();
+    Toast.fire({
+      icon: "error",
+      title: "您的訂單未成功送出"
+    });
+  })
 }
