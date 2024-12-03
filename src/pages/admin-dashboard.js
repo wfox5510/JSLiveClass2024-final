@@ -1,5 +1,6 @@
 import { api_base, api_path, api_token } from '../../main'
 let orderData;
+
 function getOrder() {
   axios.get(`${api_base}api/livejs/v1/admin/${api_path}/orders`, {
     headers: {
@@ -101,28 +102,54 @@ orderPageTable.addEventListener('click', (e) => {
 })
 
 function delOrder(OrderID) {
+  Swal.fire({
+    title: 'Loading...',
+    text: 'Please wait while we fetch the data.',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  });
   axios.delete(`${api_base}api/livejs/v1/admin/${api_path}/orders/${OrderID}`, {
     headers: {
       authorization: api_token
     }
   })
-    .then((response) => { getOrder() })
-    .catch((error) => { console.log(error.response.data.message) })
+    .then((response) => { 
+      getOrder()
+    })
+    .catch((error) => { 
+      console.log(error.response.data.message)
+    })
+    .finally(()=>Swal.close())
 }
 
 let discardAllBtn = document.querySelector('.discardAllBtn');
-discardAllBtn.addEventListener('click',(e) => delAllOrder());
+discardAllBtn.addEventListener('click',(e) => {delAllOrder()
+  e.target.setAttribute("disabled", "");
+});
 
 function delAllOrder(){
+    Swal.fire({
+      title: 'Loading...',
+      text: 'Please wait while we fetch the data.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    });
     axios.delete(`${api_base}api/livejs/v1/admin/${api_path}/orders`,{
       headers: {
         authorization: api_token
       }
     })
-    .then((response) => getOrder())
+    .then((response) => {
+      getOrder();
+      Swal.close();
+    })
     .catch((error) => console.log(error.response.data.message))
+    .finally(()=>Swal.close())
 }
-
 
 // C3.js
 let chart = c3.generate({
