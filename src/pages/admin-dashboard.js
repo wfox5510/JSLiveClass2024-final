@@ -8,9 +8,9 @@ function getOrder() {
     }
   })
     .then((response) => {
-      console.log(response);
       orderData = response.data.orders;
       renderOrderList(orderData);
+      renderChart(orderData);
     })
     .catch((error) => { console.log(error.response.data.messege || '取得訂單列表失敗'); })
 }
@@ -67,7 +67,7 @@ orderPageTable.addEventListener('click', (e) => {
     let orderStatusHtml = e.target.closest(".orderStatus");
     e.target.innerHTML === "已處理" ? isOrderPaid = true : isOrderPaid = false;
     isOrderPaid = !isOrderPaid;
-    
+
     e.preventDefault();
     putOrderState(orderStatusHtml, orderID, isOrderPaid);
   }
@@ -115,58 +115,76 @@ function delOrder(OrderID) {
       authorization: api_token
     }
   })
-    .then((response) => { 
+    .then((response) => {
       getOrder()
     })
-    .catch((error) => { 
+    .catch((error) => {
       console.log(error.response.data.message)
     })
-    .finally(()=>Swal.close())
+    .finally(() => Swal.close())
 }
 
 let discardAllBtn = document.querySelector('.discardAllBtn');
-discardAllBtn.addEventListener('click',(e) => {delAllOrder()
+discardAllBtn.addEventListener('click', (e) => {
+  delAllOrder()
   e.target.setAttribute("disabled", "");
 });
 
-function delAllOrder(){
-    Swal.fire({
-      title: 'Loading...',
-      text: '訂單處理中...請稍後',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading()
-      }
-    });
-    axios.delete(`${api_base}api/livejs/v1/admin/${api_path}/orders`,{
-      headers: {
-        authorization: api_token
-      }
-    })
+function delAllOrder() {
+  Swal.fire({
+    title: 'Loading...',
+    text: '訂單處理中...請稍後',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  });
+  axios.delete(`${api_base}api/livejs/v1/admin/${api_path}/orders`, {
+    headers: {
+      authorization: api_token
+    }
+  })
     .then((response) => {
       getOrder();
       Swal.close();
     })
     .catch((error) => console.log(error.response.data.message))
-    .finally(()=>Swal.close())
+    .finally(() => Swal.close())
 }
 
-// C3.js
-let chart = c3.generate({
-  bindto: '#chart', // HTML 元素綁定
-  data: {
-    type: "pie",
-    columns: [
-      ['Louvre 雙人床架', 1],
-      ['Antony 雙人床架', 2],
-      ['Anty 雙人床架', 3],
-      ['其他', 4],
-    ],
-    colors: {
-      "Louvre 雙人床架": "#DACBFF",
-      "Antony 雙人床架": "#9D7FEA",
-      "Anty 雙人床架": "#5434A7",
-      "其他": "#301E5F",
-    }
-  },
-});
+
+function renderChart(orderData) {
+  let productOrderCount = [];
+  orderData.map((orderDataItem) => {
+    ;
+    orderDataItem.products.map((productsItem => {
+      productOrderCount[productsItem.title] === undefined ? productOrderCount[productsItem.title] = 1 : productOrderCount[productsItem.title]++;
+    }))
+  })
+  let sortedProductOrder = Object.entries(productOrderCount).sort((a, b) => b[1] - a[1]);
+  let countOther = 0;
+  for (let i = 3; i < sortedProductOrder.length; i++) {
+    countOther += sortedProductOrder[i][1];
+  }
+  console.log(sortedProductOrder);
+  console.log(countOther);
+  // C3.js
+  let chart = c3.generate({
+    bindto: '#chart', // HTML 元素綁定
+    data: {
+      type: "pie",
+      columns: [
+        [sortedProductOrder[0][0], sortedProductOrder[0][1]],
+        [sortedProductOrder[1][0], sortedProductOrder[1][1]],
+        [sortedProductOrder[2][0], sortedProductOrder[2][1]],
+        ['其他', countOther],
+      ],
+      colors: {
+        "Louvre 雙人床架": "#DACBFF",
+        "Antony 雙人床架": "#9D7FEA",
+        "Anty 雙人床架": "#5434A7",
+        "其他": "#301E5F",
+      }
+    },
+  });
+}
