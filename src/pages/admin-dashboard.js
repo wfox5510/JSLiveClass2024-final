@@ -104,7 +104,7 @@ orderPageTable.addEventListener('click', (e) => {
 function delOrder(OrderID) {
   Swal.fire({
     title: 'Loading...',
-    text: 'Please wait while we fetch the data.',
+    text: '訂單處理中...請稍後',
     allowOutsideClick: false,
     didOpen: () => {
       Swal.showLoading()
@@ -132,7 +132,7 @@ discardAllBtn.addEventListener('click',(e) => {delAllOrder()
 function delAllOrder(){
     Swal.fire({
       title: 'Loading...',
-      text: 'Please wait while we fetch the data.',
+      text: '訂單處理中...請稍後',
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading()
