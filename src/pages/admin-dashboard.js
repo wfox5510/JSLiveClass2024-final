@@ -126,8 +126,7 @@ function delOrder(OrderID) {
 
 let discardAllBtn = document.querySelector('.discardAllBtn');
 discardAllBtn.addEventListener('click', (e) => {
-  //delAllOrder()
-  renderChart(orderData);
+  delAllOrder()
   e.target.setAttribute("disabled", "");
 });
 
