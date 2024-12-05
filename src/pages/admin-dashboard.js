@@ -126,7 +126,8 @@ function delOrder(OrderID) {
 
 let discardAllBtn = document.querySelector('.discardAllBtn');
 discardAllBtn.addEventListener('click', (e) => {
-  delAllOrder()
+  //delAllOrder()
+  renderChart(orderData);
   e.target.setAttribute("disabled", "");
 });
 
@@ -156,34 +157,32 @@ function delAllOrder() {
 function renderChart(orderData) {
   let productOrderCount = [];
   orderData.map((orderDataItem) => {
-    ;
     orderDataItem.products.map((productsItem => {
       productOrderCount[productsItem.title] === undefined ? productOrderCount[productsItem.title] = 1 : productOrderCount[productsItem.title]++;
     }))
   })
-  let sortedProductOrder = Object.entries(productOrderCount).sort((a, b) => b[1] - a[1]);
-  let countOther = 0;
-  for (let i = 3; i < sortedProductOrder.length; i++) {
-    countOther += sortedProductOrder[i][1];
-  }
-  console.log(sortedProductOrder);
-  console.log(countOther);
-  // C3.js
+  let orderProductData = [];
+  let sortedProductOrder = (Object.entries(productOrderCount).sort((a, b) => b[1] - a[1]));
+  sortedProductOrder.forEach((sortedProductOrderItem,index)=>{
+    if(index >= 3){
+      orderProductData[3] === undefined ? orderProductData[3] = ["其他",Number(sortedProductOrderItem[1])] : orderProductData[3][1] += Number(sortedProductOrderItem[1]);
+    }
+    else {
+      orderProductData[index]=sortedProductOrderItem;
+    }
+  })
+
+  //C3.js
   let chart = c3.generate({
     bindto: '#chart', // HTML 元素綁定
     data: {
       type: "pie",
-      columns: [
-        [sortedProductOrder[0][0], sortedProductOrder[0][1]],
-        [sortedProductOrder[1][0], sortedProductOrder[1][1]],
-        [sortedProductOrder[2][0], sortedProductOrder[2][1]],
-        ['其他', countOther],
-      ],
+      columns: orderProductData,
       colors: {
-        "Louvre 雙人床架": "#DACBFF",
-        "Antony 雙人床架": "#9D7FEA",
-        "Anty 雙人床架": "#5434A7",
-        "其他": "#301E5F",
+        // "Louvre 雙人床架": "#DACBFF",
+        // "Antony 雙人床架": "#9D7FEA",
+        // "Anty 雙人床架": "#5434A7",
+        // "其他": "#301E5F",
       }
     },
   });
